@@ -252,6 +252,10 @@ export default {
   .sort {
     padding-top: 150px;
   }
+  .modal-content {
+    margin-top: 50px;
+    width: 90%;
+  }
 }
   p > label {
     display: block;
