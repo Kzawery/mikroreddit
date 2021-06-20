@@ -46,7 +46,6 @@ export default {
     padding-top: 80px;
   }
 
-
   @media screen and (max-width: 600px) {
     .space {
       padding-top: 150px;

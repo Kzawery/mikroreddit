@@ -9,7 +9,7 @@
       <form style="width: 100%; align-items: center">
         <div style="width: 70%; margin-left: auto;
     margin-right: auto;">
-          <input class="form-control" v-model="subname" style="margin-bottom: 5px; width: 100%" type="text" placeholder="Subname" required>
+          <input class="form-control" v-model="subname" style="margin-bottom: 5px;" type="text" placeholder="Subname" required>
           <input class="form-control" v-model="description" style="margin-bottom: 5px" placeholder="Description" required>
           <div style="width: 100%; align-content: center">
             <button class="btn btn-primary" style="margin-bottom: 5px" @click="save">Save Changes</button>
@@ -131,6 +131,10 @@ export default {
     max-width: 500px;
     margin-left: auto;
     margin-right: auto;
+  }
+  .form-control {
+    display: initial;
+    width: initial;
   }
   @media screen and (max-width: 600px) {
     .sorthome {

@@ -105,7 +105,10 @@ export default {
       document.getElementById('editDesc').style.display = 'none';
     },
     edit() {
-      axios.put(`/subreddits/edit/${this.$route.params.subname}`, {description: this.contentEdit}, {headers: authHeader()}).then(() => { this.closeEditModal();}).catch(() => {});
+      axios.put(`/subreddits/edit/${this.$route.params.subname}`, {description: this.contentEdit}, {headers: authHeader()}).then(() => {
+        this.closeEditModal();
+        this.subreddit.description = this.contentEdit;
+      }).catch(() => {});
     },
     leave(){
         this.member = !this.member;
@@ -258,10 +261,10 @@ export default {
   }
 
   input:invalid {
-    box-shadow: 0 0 5px 1px red;
+    box-shadow: 0 0 5px 1px $red;
   }
   textarea:invalid {
-    box-shadow: 0 0 5px 1px red;
+    box-shadow: 0 0 5px 1px $red;
   }
   input:focus:invalid {
     box-shadow: none;

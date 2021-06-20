@@ -2,70 +2,26 @@
   <Navbar/>
   <div style="padding-top: 120px;"></div>
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-          <div class="card-body" style="width: 60%">
-            <div class="e-profile">
-              <div class="row">
-                <div class="col-12 col-sm-auto mb-3">
-                </div>
-                <div>
-                  <div>
-                    <p>{{user.nickname}}</p>
-                    <p>{{user.email}}</p>
-                  </div>
-                </div>
-              </div>
-              <div class="tab-content pt-3">
-                <div class="tab-pane active">
-                  <form class="form" novalidate="">
-                    <div class="row">
-                      <div class="col">
-                        <div class="row">
-                          <div class="col">
-                          </div>
-                          <div class="col">
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col">
-                        <br>
-                        <div class="mb-2"><b>Change Password</b></div>
-                        <br>
-                        <div class="row">
-                          <div class="col">
-                            <div class="form-group">
-                              <label>Current Password</label>
-                              <input class="form-control" v-model="current" type="password" placeholder="••••••">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col">
-                            <div class="form-group">
-                              <label>New Password</label>
-                              <input class="form-control" v-model="newpassword" type="password" placeholder="••••••">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col">
-                            <div class="form-group">
-                              <label>Confirm <span class="d-none d-xl-inline">Password</span></label>
-                              <input class="form-control" v-model="confirmpassword" type="password" placeholder="••••••"></div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                    </div>
-                    <div class="col">
-                        <button class="btn btn-primary" @click="savePassword">Save Changes</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
+    <div class="card-body" style="width: 60%">
+      <div>
+        <p>{{user.nickname}}</p>
+        <p>{{user.email}}</p>
+      </div>
+        <form class="form" novalidate="">
+              <div class="mb-2"><b>Change Password</b></div>
+              <br>
+              <label>Current Password</label>
+              <input class="form-control" v-model="current" type="password" placeholder="••••••">
+              <label>New Password</label>
+              <input class="form-control" v-model="newpassword" type="password" placeholder="••••••">
+            <div class="form-group">
+              <label>Confirm <span class="d-none d-xl-inline">Password</span></label>
+              <input class="form-control" v-model="confirmpassword" type="password" placeholder="••••••"></div>
+          <div class="col">
+              <button class="btn btn-primary" @click="savePassword">Save Changes</button>
           </div>
+        </form>
+      </div>
 </template>
 <script>
 import Navbar from './Navbar';

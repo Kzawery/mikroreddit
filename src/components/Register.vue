@@ -1,8 +1,8 @@
 <template>
-  <body class="text-center" cz-shortcut-listen="true">
+  <body class="text-center">
     <form class="form-signin">
       <h1 class="h3 mb-3 font-weight-normal">Register</h1>
-      <div v-if="error">
+      <div v-if="error" class="errordiv">
         Username or email was already used
       </div>
       <label for="inputEmail" class="sr-only">Email address</label>
@@ -12,7 +12,7 @@
 
       <label for="inputPassword" class="sr-only">Password</label>
       <input type="password" id="inputPassword" v-model="password" class="form-control" placeholder="Password" required minlength="5">
-      <div v-if="diffrentPasswords" style="color: red">
+      <div v-if="diffrentPasswords" class="errordiv">
         Passwords are not the same
       </div>
       <label for="inputPassword" class="sr-only">Password</label>
@@ -73,5 +73,8 @@ export default {
     margin-left: auto;
     margin-right: auto;
     margin-top: 100px;
+  }
+  .errordiv {
+    color: $red;
   }
 </style>
