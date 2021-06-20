@@ -1,133 +1,162 @@
 <template>
-
-<div class="post" style="width: 100vw;" v-if="list">
-  <div class="card-body" style="text-align: start;">
-    <div style="text-align: end;"><p class="header-icon">&#10060;</p></div>
-    <h5 class="card-title list" style="text-align: start;
-    font-weight: bold;">{{post.title}}</h5>
-    <h6 class="card-user list">posted by user: {{post.user}} on: <router-link :to="'/r/' + post.subname">/r/{{post.subname}}</router-link></h6>
-    <div style="display: flex">
-        <div style="flex: auto; text-align: start">
-            <p class="card-text list" >{{post.content}}</p>
-            <a v-if="post.videourl" class=""
-                :href="post.videourl"> link
-            </a>
-        </div>
-        <img :src="post.imagepath" style="width: 150px; height: 150xp;"/>
-    </div>
-    
-    <br>
-    <div class="bottom-panel">
-        <div>
-            <button @click="upvote" :class="{upvoted: upvoted}" class="button-like">&#128077;</button>
-            <span class="votes">{{ votes }}</span>
-            <button @click="downvote" :class="{downvoted: downvoted}" class="button-like">&#128078;</button>
-            <router-link v-if="!inpost" :to="'/r/' + post.subname + '/posts/id'">&#128172; Comments</router-link>
-            <p v-if="inpost" class="header-icon" @click="showReplayArea = !showReplayArea">&#128172;Comment</p>
-        </div>
-        <div v-if="showReplayArea" class="comment-div">
-            <textarea class="form-control" aria-label="With textarea"></textarea>
-             <div class="reply-btn">
-                <p class="header-icon" style="display:flex">Comment&#128073;</p>
-            </div>
-        </div>
-    </div>
-  </div>
-</div>
-<div class="post" style="width: 100vw;" v-if="!list">
+<div class="post" style="width: 100vw;">
   <div class="card-body">
-    <div style="text-align: end;"><p class="header-icon">&#10060;</p></div>
+    <div style="text-align: end;"><p v-if="moderator" @click="delPost" class="header-icon">&#10060;</p></div>
     <h5 class="card-title">{{post.title}}</h5>
-    <h6 class="card-user">posted by user: {{post.user}} on: <router-link :to="'/r/' + post.subname">/r/{{post.subname}}</router-link></h6>
-    <p class="card-text">{{post.content}}</p>
+    <h6 class="card-user">posted by user: {{post.nickname}} on: <router-link :to="'/r/' + post.subname">/r/{{post.subname}}</router-link></h6>
+    <p class="card-text" v-html="URLify(post.content)"></p>
     <img :src="post.imagepath"/>
-    <div v-if="post.videourl != ''" class="iframe-container">
+    <div v-if="post.videourl" class="iframe-container">
         <iframe
-        :src="post.videourl">
+        :src="parseyt(post.videourl)">
         </iframe>
     </div>
     <br>
     <div class="bottom-panel">
         <div>
             <button @click="upvote" :class="{upvoted: upvoted}" class="button-like">&#128077;</button>
-            <span class="votes">{{ votes }}</span>
+            <span class="votes">{{ amount }}</span>
             <button @click="downvote" :class="{downvoted: downvoted}" class="button-like">&#128078;</button>
-            <router-link v-if="!inpost" :to="'/r/' + post.subname + '/posts/id'">&#128172; Comments</router-link>
-            <p v-if="inpost" class="header-icon" @click="showReplayArea = !showReplayArea">&#128172;Comment</p>
+            <router-link v-if="!inpost" :to="'/r/' + post.subname + '/posts/' + post.id">&#128172; Comments</router-link>
+            <p v-if="inpost" class="header-icon" @click="showReplayArea = !showReplayArea">&#128172; Comment</p>
         </div>
         <div v-if="showReplayArea" class="comment-div">
-            <textarea class="form-control" aria-label="With textarea"></textarea>
-             <div class="reply-btn">
+            <textarea class="form-control" style="max-width: 100%;" v-model="commentholder" aria-label="With textarea"></textarea>
+             <div class="reply-btn" @click="comment">
                 <p class="header-icon" style="display:flex">Comment&#128073;</p>
             </div>
         </div>
     </div>
   </div>
 </div>
-
 </template>
 <script>
+import axios from "../services/axios";
+import authHeader from "../services/auth";
+// import socketio from "../services/socketio";
+
 export default {
+
 	props: {
 		post: Object,
-        inpost: Boolean,
-        list: Boolean
+    inpost: Boolean,
 	},
     data: function() {
     return {
       upvoted: false,
       downvoted: false,
       showReplayArea: false,
+      amount: 0,
+      commentholder: "",
+      member: false,
+      moderator: false
     }
     },
     methods: {
-    upvote: function() {
+    upvote: async function () {
+      if(this.downvoted) {
+        this.amount++;
+      }
+      if(this.upvoted) {
+        this.amount--;
+      } else {
+        this.amount++;
+      }
       this.upvoted = !this.upvoted;
       this.downvoted = false;
+      await axios.post(`/posts/upvote/${this.post.id}`, {}, {headers: authHeader()}).then((resp) => {
+        console.log(resp);
+      }).catch((err) => {
+        console.log(err);
+      })
     },
-    downvote: function() {
+    URLify: function(string){
+      const URLMatcher = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\\/%=~_|$])/igm
+      const urls = string.match(URLMatcher);
+      if (urls) {
+        urls.forEach(function (url) {
+          string = string.replace(url, '<a target="_blank" href="' + url + '">' + url + "</a>");
+        });
+      }
+      return string.replace("(", "<br/>(");
+    },
+    downvote: async function() {
+      if(this.upvoted) {
+        this.amount--;
+      }
+      if(this.downvoted) {
+        this.amount++;
+      } else {
+        this.amount--;
+      }
       this.downvoted = !this.downvoted;
       this.upvoted = false;
-    }
+      axios.post(`/posts/downvote/${this.post.id}`, {}, {headers: authHeader()}).then((resp) => {
+        console.log(resp);
+      }).catch((err) => {
+        console.log(err);
+      })
     },
-    computed: {
-    votes: function() {
-      if (this.upvoted) {
-        return this.post.votes + 1;
-      } else if (this.downvoted) {
-        return this.post.votes - 1;
+    delPost: function (){
+      console.log(this.post);
+        axios.post(`/posts/delete`,{'id': this.post.id, 'subname': this.post.subname},{headers: authHeader()}).then(()=>{}).catch((err) => {
+          console.log(err)});
+    },
+    parseyt: function (url) {
+      url = url.split("watch?v=");
+      return url[0] + "embed/" +url[1];
+    },
+    comment: function () {
+      axios.post(`/comments/add`, {'content': this.commentholder, 'postId': this.post.id}, {headers: authHeader()})
+          .then(()=>{
+            this.commentholder = '';
+            this.showReplayArea = false;
+          })
+          .catch((err) => {
+        console.log(err)});
+    },
+    },
+  async beforeMount() {
+    await axios.get(`users/subreddit/moderator/${this.post.subname}`,  {headers: authHeader()}).then((resp) => {
+      console.log(resp.data.rows.length);
+      if(resp.data.rows.length > 0) {
+        this.moderator = true;
       } else {
-        return this.post.votes;
+        this.moderator = false;
       }
+    }).catch(() => {});
+
+    this.amount = this.post.votes;
+    if (this.post.upvoted === 1) {
+      this.upvoted = true;
+    } else if (this.post.upvoted === -1) {
+      this.downvoted = true;
     }
-  }
-    
+  },
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
+  @import "./src/SCSS/colors";
     .button-like {
-        border: none;
-		cursor:pointer;
-		overflow: hidden;
-		outline:none;
-		margin: 5px;
-        width: 30px;
-    }
-    .list {
-        font-size: 12px;
+      border: none;
+      cursor:pointer;
+      overflow: hidden;
+      outline:none;
+      margin: 5px;
+      width: 30px;
     }
     .header-icon {
-        font-size: 16px;
-        margin: 0px;
-        cursor: pointer;
-        user-select: none;
-        display: inline;
+      font-size: 16px;
+      margin: 0px;
+      cursor: pointer;
+      user-select: none;
+      display: inline;
     }
     .reply-btn {
-        display: inline-block;
-        align-items: center;
-        background: white;
-        margin-top: 3px;
+      display: inline-block;
+      align-items: center;
+      background: $white;
+      margin-top: 3px;
     }
     .form-control {
         resize: none;
@@ -139,7 +168,7 @@ export default {
         text-align: start;
     }
     .card-user {
-        color: #888;
+        color: $gray;
         text-align: start;
     }
     img {
@@ -147,7 +176,7 @@ export default {
         padding-bottom: 10px;
     }
     .card-body {
-        border: 1px solid #dddd;
+        border: 1px solid $gray;
         max-width: 600px;
         margin-left: auto;
         margin-right: auto;
@@ -159,19 +188,20 @@ export default {
     }
 
     .upvoted {
-    background-color: #FF8B60;
+    background-color: $upvote;
     color: white;
     }
 
     .downvoted {
-    background-color: #9494FF;
+    background-color: $downvote;
     color: white;
     }
-	.post {
-		background: #fff;
-        overflow: hidden;
-        margin-bottom: 10px;
-	}
+    .post {
+      position: relative;
+      background: $white;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
     
     .iframe-container{
     position: relative;

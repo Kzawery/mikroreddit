@@ -1,59 +1,130 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light" style="z-index: 100">
-  <a class="navbar-brand" href="#">Mikro Reddit</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">  
-        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <router-link class="nav-link" to="/login">Login</router-link>
-      </li>
-      <li class="nav-item">
-        <router-link class="nav-link" to="/profile">Profile</router-link>
-      </li>
-    </ul>
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <div class="topnav">
+    <router-link class="nav-link" to="/">Mikroreddit</router-link>
+    <router-link class="nav-link" to="/profile">Profile</router-link>
+    <router-link class="nav-link" @click="logout" to="/logout">Logout</router-link>
+<!--    <button class="btn btn-outline-success" style="float: right" @click="logout">Logout</button>-->
+    <div class="search-container">
+      <form>
+        <div>
+          <input class="search" type="text" v-model="searchbar" placeholder="Search.." name="search">
+          <button type="submit" @click="search"><i class="fa fa-search"></i></button>
+        </div>
+      </form>
+    </div>
   </div>
-</nav>
+
 </template>
   
 <script>
 import "bootstrap/dist/css/bootstrap.min.css";
+
 export default {
   name: 'Navbar',
   props: {
     msg: String
+  },
+  data: function() {
+    return {
+      searchbar: ''
+    }
+  },
+  methods: {
+    logout() {
+      localStorage.clear();
+      this.$router.push("/login");
+    },
+    search(){
+      console.log(this.searchbar);
+
+      this.$router.push({ path: `/search/${this.searchbar}`})
+    }
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
+<style lang="scss" scoped>
+@import "./src/SCSS/colors";
+
+* {box-sizing: border-box;}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+
+.topnav {
+  overflow: hidden;
+  background-color: #a2eb94;
+  z-index: 100;
+  position: fixed;
+  width: 100%;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
+
+.topnav a {
+  float: left;
+  display: block;
+  color: $black;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
 }
-a {
-  color: #42b983;
+
+.topnav a:hover {
+  background-color: $white;
+  color: $black;
 }
-nav {
-    position: fixed;
-    top: 0;
+
+.topnav a.active {
+  background-color: $light-green;
+  color: $white;
+}
+
+.topnav .search-container {
+  float: right;
+}
+
+.topnav input[type=text] {
+  padding: 6px;
+  margin-top: 8px;
+  font-size: 17px;
+  border: none;
+}
+
+.topnav button {
+  float: right;
+  padding: 6px 10px;
+  margin-top: 8px;
+  margin-right: 16px;
+  background: $light-gray;
+  font-size: 17px;
+  border: none;
+  cursor: pointer;
+}
+
+.topnav .search-container button:hover {
+  background: #ccc;
+}
+
+@media screen and (max-width: 600px) {
+  .button {
+    float: start;
+    background: $light-gray;
+    font-size: 17px;
+    border: none;
+    cursor: pointer;
+  }
+  .search-container {
     width: 100%;
+    align-content: start;
+    padding-bottom: 5px;
+  }
+  .search {
+    width: 80%;
+  }
 }
+
 </style>

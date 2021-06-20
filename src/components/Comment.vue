@@ -4,7 +4,9 @@
             <div style="display: flex; align-items: center;">
                 <p class="header-text" style="white-space: nowrap;">{{comment.user}}</p>
                 <div style="width:100%"></div>
-                <div style="text-align: end;"><p class="header-icon">&#10060;</p></div>
+                <div style="text-align: end;" @click="deleteComment">
+                  <p class="header-icon">&#10060;</p>
+                </div>
             </div>
           <div class="separator"></div>
         </div>
@@ -15,37 +17,40 @@
 </template>
 
 <script>
+import axios from "../services/axios";
+import authHeader from "../services/auth";
+
 export default {
     props: {
 		comment: Object
 	},
+  methods: {
+    deleteComment(){
+      axios.delete(`comments/${this.comment.id}`, {headers: authHeader()}).then(()=> {}).catch(() => {});
+    }
+  },
+  beforeMount() {
+  }
 }
 </script>
 
-<style>
-    .reply-btn {
-        display: inline-block;
-        align-items: center;
-        background: white;
-        margin-top: 3px;
-    }
-    .form-control {
-        resize: none;
-    }
+<style lang="scss" scoped>
+  @import "./src/SCSS/colors";
     .comment {
         padding: 5px;
         margin-bottom: 5px;
         min-height: 60px;
-        background: white;
-        border: 1px solid #dddd;
+        background: $white;
+        border: 1px solid $gray;
     }
     .comment-head {
         width: 100%;
-        background: #FFF;
+        background: $white;
         text-align: start;
     }
     .comment-body {
-        text-align: start;
+      padding: 5px;
+      text-align: start;
     }
     .separator {
         width: 100%;
@@ -54,7 +59,6 @@ export default {
     }
     .header-text {
         font-size: 12px;
-        margin: 0px;
         margin-bottom: 5px;
     }
     .header-icon {
