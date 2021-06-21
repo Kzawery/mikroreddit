@@ -37,7 +37,6 @@ export default {
             } else {
               this.$router.push('/');
             }
-            this.posts.push(...res.data);
           }, (err) => {
             console.log(err);
             this.$router.push('/');

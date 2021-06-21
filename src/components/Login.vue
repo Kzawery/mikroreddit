@@ -31,10 +31,9 @@ export default {
             await axios.post("/auth/login", {
               username: this.username,
               password: this.password
-            } ).then( async (resp) => {
+            } ).then((resp) => {
                 localStorage.setItem("token", resp.data.token);
                 localStorage.setItem("user", JSON.stringify(resp.data.user));
-                await setTimeout(() => {},1000);
                 this.$router.push("/");
             }). catch((error) => {
               console.log(error);
