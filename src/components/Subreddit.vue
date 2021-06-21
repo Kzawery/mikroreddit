@@ -27,8 +27,8 @@
       <div style="width: 100%; align-content: center; margin-bottom: 15px">
         <h4 class="text-nowrap">Edit description</h4>
       </div>
-      <form style="width: 100%; align-items: center">
-          <textarea class="form-control" v-model="contentEdit" style="margin-bottom: 5px" placeholder="Content" required></textarea>
+      <form style="width: 100%; display: grid; align-items: center">
+          <textarea class="form-control" v-model="contentEdit" style="margin-bottom: 5px; width: initial" placeholder="Content" required></textarea>
           <button class="btn btn-primary" style="margin-bottom: 5px" @click="edit">Save Changes</button>
       </form>
     </div>
@@ -80,7 +80,6 @@ export default {
     getPosts() {
       axios.get(`/posts?page=${this.page}`, {headers: authHeader(), params: {'subname':this.$route.params.subname, 'sort': this.sort}})
           .then((res) => {
-            console.log(res.data);
             this.posts.push(...res.data)
           }, (err) => {console.log(err)})
     },
@@ -247,6 +246,7 @@ export default {
         padding: 20px;
         border: 1px solid $gray;
         width: 40%;
+        max-width: 400px;
     }
 @media screen and (max-width: 600px) {
   .sort {
@@ -261,7 +261,6 @@ export default {
     display: block;
   }
   textarea {
-    max-width: 300px;
   }
 
   input:invalid {

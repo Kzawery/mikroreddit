@@ -3,9 +3,9 @@
     <form class="form-signin">
       <h1 class="h3 mb-3 font-weight-normal">Please log in</h1>
       <label for="inputUsername" class="sr-only">Username</label>
-      <input id="inputUsername"  v-model="username" class="form-control" placeholder="Username" required="" autofocus="" style="margin-bottom: 10px; margin-top:10px;">
+      <input id="inputUsername"  v-model="username" class="form-control" placeholder="Username" autofocus="" style="margin-bottom: 10px; margin-top:10px;" required>
       <label for="inputPassword" class="sr-only">Password</label>
-      <input type="password" id="inputPassword" v-model="password" class="form-control" placeholder="Password" required="">
+      <input type="password" id="inputPassword" v-model="password" class="form-control" placeholder="Password" required>
       <button class="btn btn-lg btn-primary btn-block" @click="login" style="margin: 0px; margin-bottom: 10px; margin-top:10px;">Login</button>
       <router-link to="/register">
         <button class="btn btn-lg btn-primary btn-block" style="margin: 0px;">Sign in</button>
@@ -27,12 +27,14 @@ export default {
 },
     methods: {
         login: async function () {
+          if(this.username === '' || this.password === '') return;
             await axios.post("/auth/login", {
               username: this.username,
               password: this.password
-            } ).then( (resp) => {
+            } ).then( async (resp) => {
                 localStorage.setItem("token", resp.data.token);
                 localStorage.setItem("user", JSON.stringify(resp.data.user));
+                await setTimeout(() => {},1000);
                 this.$router.push("/");
             }). catch((error) => {
               console.log(error);

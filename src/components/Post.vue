@@ -1,7 +1,7 @@
 <template>
-<div class="post" style="width: 100vw;">
+<div class="post">
   <div class="card-body">
-    <div style="text-align: end;"><p v-if="moderator" @click="delPost" class="header-icon">&#10060;</p></div>
+    <div style="text-align: end;"><p v-if="moderator || post.user_id === user.id" @click="delPost" class="header-icon">&#10060;</p></div>
     <h5 class="card-title">{{post.title}}</h5>
     <h6 class="card-user">posted by user: {{post.nickname}} on: <router-link :to="'/r/' + post.subname">/r/{{post.subname}}</router-link></h6>
     <p class="card-text" v-html="URLify(post.content)"></p>
@@ -33,7 +33,6 @@
 <script>
 import axios from "../services/axios";
 import authHeader from "../services/auth";
-// import socketio from "../services/socketio";
 
 export default {
 
@@ -49,7 +48,8 @@ export default {
       amount: 0,
       commentholder: "",
       member: false,
-      moderator: false
+      moderator: false,
+      user: JSON.parse(localStorage.getItem('user'))
     }
     },
     methods: {
@@ -99,7 +99,9 @@ export default {
     },
     delPost: function (){
       console.log(this.post);
-        axios.post(`/posts/delete`,{'id': this.post.id, 'subname': this.post.subname},{headers: authHeader()}).then(()=>{}).catch((err) => {
+        axios.post(`/posts/delete`,{'id': this.post.id, 'subname': this.post.subname},{headers: authHeader()}).then(()=>{
+          this.$router.go(0);
+        }).catch((err) => {
           console.log(err)});
     },
     parseyt: function (url) {
@@ -118,7 +120,6 @@ export default {
     },
   async beforeMount() {
     await axios.get(`users/subreddit/moderator/${this.post.subname}`,  {headers: authHeader()}).then((resp) => {
-      console.log(resp.data.rows.length);
       if(resp.data.rows.length > 0) {
         this.moderator = true;
       } else {

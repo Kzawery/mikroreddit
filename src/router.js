@@ -9,12 +9,12 @@ import Subreddit from './components/Subreddit'
 import SearchResults from "./components/SearchResults";
 
 const routes = [
-    {path: '/login', component: Login, meta: {requiresAuth: false}},
-    {path: '/register', component: Register, meta: {requiresAuth: false}},
-    {path: '/profile', component: Profile, meta: {requiresAuth: true}},
-    {path: '/r/:subname/posts/:id', component: PostPage, meta: {requiresAuth: true}},
-    {path: '/r/:subname', component: Subreddit, meta: {requiresAuth: true}},
-    {path: '/', component: Home, meta: {requiresAuth: true}, },
+    {path: '/login', name: 'login', component: Login, meta: {requiresAuth: false}},
+    {path: '/register', name: 'register', component: Register, meta: {requiresAuth: false}},
+    {path: '/profile', name: 'profile',component: Profile, meta: {requiresAuth: true}},
+    {path: '/r/:subname/posts/:id', name: 'post', component: PostPage, meta: {requiresAuth: true}},
+    {path: '/r/:subname', name: 'subreddit', component: Subreddit, meta: {requiresAuth: true}},
+    {path: '/', name: 'home', component: Home, meta: {requiresAuth: true}, },
     {path: '/search/:query', name: 'search', component: SearchResults, meta: {requiresAuth: true}, props: true },
 ]
 
@@ -31,6 +31,5 @@ router.beforeEach((to, from, next) => {
     }
     next();
 });
-
 
 export default router;

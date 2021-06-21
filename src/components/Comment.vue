@@ -4,7 +4,7 @@
             <div style="display: flex; align-items: center;">
                 <p class="header-text" style="white-space: nowrap;">{{comment.user}}</p>
                 <div style="width:100%"></div>
-                <div style="text-align: end;" @click="deleteComment">
+                <div style="text-align: end;" v-if="comment.user_id === user.id || moderator" @click="deleteComment">
                   <p class="header-icon">&#10060;</p>
                 </div>
             </div>
@@ -21,15 +21,34 @@ import axios from "../services/axios";
 import authHeader from "../services/auth";
 
 export default {
-    props: {
-		comment: Object
-	},
-  methods: {
-    deleteComment(){
-      axios.delete(`comments/${this.comment.id}`, {headers: authHeader()}).then(()=> {}).catch(() => {});
+  props: {
+    comment: Object,
+  },
+  data: function () {
+    return {
+      user: JSON.parse(localStorage.getItem('user')),
+      moderator: false
     }
   },
-  beforeMount() {
+  methods: {
+    deleteComment() {
+      axios.delete(`comments/${this.comment.id}`, {headers: authHeader()}).then(() => {
+      }).catch(() => {
+      });
+    },
+  },
+  async beforeMount() {
+    await axios.get(`comments/moderator/${this.comment.id}`,  {headers: authHeader()}).then((resp) => {
+      console.log(resp.data.name);
+      axios.get(`users/subreddit/moderator/${resp.data.name}`,  {headers: authHeader()}).then((resp) => {
+        if(resp.data.rows.length > 0) {
+          this.moderator = true;
+        } else {
+          this.moderator = false;
+        }
+      }).catch(() => {});
+
+    }).catch(() => {});
   }
 }
 </script>

@@ -32,10 +32,15 @@ export default {
     async getPost() {
       await axios.get(`/posts/${this.$route.params.id}`, {headers: authHeader()})
           .then((res) => {
-            console.log(res);
-            this.posts.push(...res.data)
+            if(res.data.length > 0) {
+              this.posts.push(...res.data);
+            } else {
+              this.$router.push('/');
+            }
+            this.posts.push(...res.data);
           }, (err) => {
-            console.log(err)
+            console.log(err);
+            this.$router.push('/');
           })
     },
     async getComments() {
@@ -53,8 +58,9 @@ export default {
       this.comments.unshift(e);
     });
     socketio.on(`comment/del`, (e) => {
-      let i = this.comments.filter((x) => x.id === e);
-      this.comments.splice(i, 1);
+      this.comments.splice(this.comments.findIndex(
+          x => Number(x.id) === Number(e)
+      ),1);
     });
   },
   async beforeMount() {

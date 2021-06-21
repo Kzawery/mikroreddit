@@ -52,7 +52,6 @@ export default {
       async getPosts() {
         await axios.get(`/posts?page=${this.page}`, {headers: authHeader(), params : {'sort': this.sort}})
             .then((res) => {
-              console.log(res.data);
               this.posts.push(...res.data)
             }, (err) => {console.log(err)})
       },
@@ -61,7 +60,6 @@ export default {
           let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight;
           if (bottomOfWindow) {
             this.page++;
-            console.log(this.page);
             this.getPosts();
           }
         }
@@ -78,6 +76,7 @@ export default {
       save() {
         let subname = this.subname;
         let description = this.description;
+        if(subname === "" || description === "") return;
         axios.post(`/subreddits/create`, {'subname': subname, 'description': description}, {headers: authHeader()}).then(
             ()=>{
               this.closeModal();
