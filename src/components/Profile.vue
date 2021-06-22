@@ -9,6 +9,7 @@
       </div>
         <form class="form" novalidate="">
               <div class="mb-2"><b>Change Password</b></div>
+              <div style="color: red;" v-if="error !== ''">{{error}}</div>
               <br>
               <label>Current Password</label>
               <input class="form-control" v-model="current" type="password" placeholder="••••••">
@@ -37,18 +38,22 @@ export default {
         current: "",
         newpassword: "",
         confirmpassword: "",
+        error: ""
       }
   },
   methods: {
       savePassword: async function () {
+        if (this.newpassword === '') return;
         if (this.newpassword === this.confirmpassword) {
           await axios.post(`users/changepassword/`, {'currentpassword': this.current, 'newpassword': this.newpassword}, {headers: authHeader()}).then(() => {
             localStorage.clear();
             this.$router.push("/login");
-            console.log('halo');
-          }).catch((err) => {
-            console.log(err);
+          }).catch(() => {
+            this.error = 'password is wrong';
+            // console.log(err);
           });
+        } else {
+          this.error = 'passwords are not the same';
         }
       },
   }

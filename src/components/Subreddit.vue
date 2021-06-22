@@ -166,10 +166,13 @@ export default {
     await axios.get( `/subreddits/${this.$route.params.subname}`,{headers: authHeader()}).then((resp) => {
       console.log(resp);
       this.subreddit = resp.data;
-    }).catch((err) => {
-      console.log(err);
+    }).catch(() => {
     });
-
+    socketio.on(`post/del`, (e) => {
+      this.posts.splice(this.posts.findIndex(
+          x => Number(x.id) === Number(e)
+      ),1);
+    });
     await axios.get(`users/subreddit/${this.$route.params.subname}`,  {headers: authHeader()}).then((resp) => {
       if(resp.data.rows.length > 0) {
         this.member = true;

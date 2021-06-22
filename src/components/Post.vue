@@ -64,8 +64,7 @@ export default {
       }
       this.upvoted = !this.upvoted;
       this.downvoted = false;
-      await axios.post(`/posts/upvote/${this.post.id}`, {}, {headers: authHeader()}).then((resp) => {
-        console.log(resp);
+      await axios.post(`/posts/upvote/${this.post.id}`, {}, {headers: authHeader()}).then(() => {
       }).catch((err) => {
         console.log(err);
       })
@@ -91,18 +90,10 @@ export default {
       }
       this.downvoted = !this.downvoted;
       this.upvoted = false;
-      axios.post(`/posts/downvote/${this.post.id}`, {}, {headers: authHeader()}).then((resp) => {
-        console.log(resp);
-      }).catch((err) => {
-        console.log(err);
-      })
+      await axios.post(`/posts/downvote/${this.post.id}`, {}, {headers: authHeader()});
     },
-    delPost: function (){
-      console.log(this.post);
-        axios.post(`/posts/delete`,{'id': this.post.id, 'subname': this.post.subname},{headers: authHeader()}).then(()=>{
-          this.$router.go(0);
-        }).catch((err) => {
-          console.log(err)});
+    delPost: async function (){
+        await axios.post(`/posts/delete`,{'id': this.post.id, 'subname': this.post.subname},{headers: authHeader()});
     },
     parseyt: function (url) {
       url = url.split("watch?v=");

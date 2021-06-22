@@ -17,6 +17,7 @@ import axios from "../services/axios";
 import authHeader from "../services/auth";
 import Post from "./Post";
 import SubredditResult from "./SubredditResult";
+import socketio from "../services/socketio";
 export default {
   data: function() {
     return {
@@ -35,7 +36,12 @@ export default {
     axios.get(`/search`, {headers: authHeader(), params: {query: this.$route.params.query}}).then((resp) => {
       this.posts.push(...resp.data.posts);
       this.subreddits.push(...resp.data.subreddits);
-    })
+    });
+    socketio.on(`post/del`, (e) => {
+      this.posts.splice(this.posts.findIndex(
+          x => Number(x.id) === Number(e)
+      ),1);
+    });
   }
 }
 </script>

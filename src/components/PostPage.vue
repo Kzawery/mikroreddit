@@ -53,14 +53,20 @@ export default {
     },
   },
   mounted() {
-    socketio.on(`comment/add`, (e) => {
+    socketio.on(`comment/add/${this.$route.params.id}`, (e) => {
       this.comments.unshift(e);
     });
-    socketio.on(`comment/del`, (e) => {
+    socketio.on(`comment/del/${this.$route.params.id}`, (e) => {
       this.comments.splice(this.comments.findIndex(
           x => Number(x.id) === Number(e)
       ),1);
     });
+
+    socketio.on(`post/del`, (e) => {
+      if(e === this.$route.params.id)
+        this.$router.go(-1);
+    });
+
   },
   async beforeMount() {
       await this.getPost();

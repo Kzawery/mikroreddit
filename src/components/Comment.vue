@@ -39,7 +39,6 @@ export default {
   },
   async beforeMount() {
     await axios.get(`comments/moderator/${this.comment.id}`,  {headers: authHeader()}).then((resp) => {
-      console.log(resp.data.name);
       axios.get(`users/subreddit/moderator/${resp.data.name}`,  {headers: authHeader()}).then((resp) => {
         if(resp.data.rows.length > 0) {
           this.moderator = true;

@@ -2,6 +2,7 @@
   <body class="text-center" cz-shortcut-listen="true" >
     <form class="form-signin">
       <h1 class="h3 mb-3 font-weight-normal">Please log in</h1>
+      <div v-if="error" style="color: red">Invalid username or password</div>
       <label for="inputUsername" class="sr-only">Username</label>
       <input id="inputUsername"  v-model="username" class="form-control" placeholder="Username" autofocus="" style="margin-bottom: 10px; margin-top:10px;" required>
       <label for="inputPassword" class="sr-only">Password</label>
@@ -22,7 +23,8 @@ export default {
   data: function() {
       return {
           password: '',
-          username: ''
+          username: '',
+          error: false
         };
 },
     methods: {
@@ -35,9 +37,7 @@ export default {
                 localStorage.setItem("token", resp.data.token);
                 localStorage.setItem("user", JSON.stringify(resp.data.user));
                 this.$router.push("/");
-            }). catch((error) => {
-              console.log(error);
-              this.error=true});
+            }). catch(() => {this.error=true});
           },
     }
 }

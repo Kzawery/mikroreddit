@@ -12,9 +12,6 @@ export default {
   props: {
     subreddit: Object
   },
-  mounted() {
-    console.log(this.subreddit)
-  }
 }
 </script>
 

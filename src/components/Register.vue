@@ -42,6 +42,7 @@ export default {
   methods: {
     register: function () {
 
+      if(this.password.length < 5) return;
       if(this.password !== this.confirmpassword) {
         this.diffrentPasswords = true;
         return;

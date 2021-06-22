@@ -9,6 +9,7 @@
       <form style="width: 100%; align-items: center">
         <div style="width: 70%; margin-left: auto;
     margin-right: auto;">
+          <div v-if="error" style="color: red">Subreddit with this name already exists</div>
           <input class="form-control" v-model="subname" style="margin-bottom: 5px;" type="text" placeholder="Subname" required>
           <input class="form-control" v-model="description" style="margin-bottom: 5px" placeholder="Description" required>
           <div style="width: 100%; align-content: center">
@@ -33,6 +34,7 @@ import Navbar from './Navbar';
 import Post from './Post'
 import axios from "../services/axios";
 import authHeader from "../services/auth";
+import socketio from "../services/socketio";
 
 export default {
     components: {
@@ -45,7 +47,8 @@ export default {
         page: 0,
         sort: "best",
         subname: "",
-        description: ""
+        description: "",
+        error: false
       }
   },
   methods: {
@@ -53,7 +56,7 @@ export default {
         await axios.get(`/posts?page=${this.page}`, {headers: authHeader(), params : {'sort': this.sort}})
             .then((res) => {
               this.posts.push(...res.data)
-            }, (err) => {console.log(err)})
+            }).catch(()=>{});
       },
       getFeed() {
         window.onscroll = () => {
@@ -79,11 +82,13 @@ export default {
         if(subname === "" || description === "") return;
         axios.post(`/subreddits/create`, {'subname': subname, 'description': description}, {headers: authHeader()}).then(
             ()=>{
+              this.error = false;
               this.closeModal();
               this.$router.push(`/r/${subname}`);
             }
         ).catch(()=>{
-          alert("Subreddit with this name already exists");
+          // alert("Subreddit with this name already exists");
+          this.error = true;
         })
       },
       async orderBy(text) {
@@ -100,7 +105,12 @@ export default {
     },
     async mounted() {
       await this.getFeed();
-  }
+      socketio.on(`post/del`, (e) => {
+        this.posts.splice(this.posts.findIndex(
+            x => Number(x.id) === Number(e)
+        ),1);
+      })
+    },
 }
 </script>
 
